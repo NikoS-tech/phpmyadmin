@@ -15,6 +15,7 @@ use PhpMyAdmin\Plugins\AuthenticationPlugin;
 use PhpMyAdmin\ResponseRenderer;
 use PhpMyAdmin\Server\Select;
 use PhpMyAdmin\Session;
+use PhpMyAdmin\Stores\ServerStore;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Util;
 use PhpMyAdmin\Utils\SessionCache;
@@ -332,6 +333,7 @@ class AuthenticationCookie extends AuthenticationPlugin
             return true;
         }
 
+
         // At the end, try to set the $this->user
         // and $this->password variables from cookies
 
@@ -349,7 +351,6 @@ class AuthenticationCookie extends AuthenticationPlugin
         if ($value === null) {
             return false;
         }
-
         $this->user = $value;
         // user was never logged in since session start
         if (empty($_SESSION['browser_access_time'])) {
@@ -526,15 +527,17 @@ class AuthenticationCookie extends AuthenticationPlugin
      */
     public function storeUsernameCookie($username): void
     {
-        // Name and password cookies need to be refreshed each time
-        // Duration = one month for username
-        $GLOBALS['config']->setCookie(
-            'pmaUser-' . $GLOBALS['server'],
-            $this->cookieEncrypt(
-                $username,
-                $this->getEncryptionSecret()
-            )
-        );
+        foreach (ServerStore::allServers() as $index => $servers) {
+            // Name and password cookies need to be refreshed each time
+            // Duration = one month for username
+            $GLOBALS['config']->setCookie(
+                'pmaUser-' . $index,
+                $this->cookieEncrypt(
+                    $servers['creds']['user'],
+                    $this->getEncryptionSecret()
+                )
+            );
+        }
     }
 
     /**
@@ -544,21 +547,23 @@ class AuthenticationCookie extends AuthenticationPlugin
      */
     public function storePasswordCookie($password): void
     {
-        $payload = ['password' => $password];
-        if ($GLOBALS['cfg']['AllowArbitraryServer'] && ! empty($GLOBALS['pma_auth_server'])) {
-            $payload['server'] = $GLOBALS['pma_auth_server'];
-        }
+        foreach (ServerStore::allServers() as $index => $servers) {
+            $payload = ['password' => $servers['creds']['password']];
+            if ($GLOBALS['cfg']['AllowArbitraryServer'] && ! empty($GLOBALS['pma_auth_server'])) {
+                $payload['server'] = $GLOBALS['pma_auth_server'];
+            }
 
-        // Duration = as configured
-        $GLOBALS['config']->setCookie(
-            'pmaAuth-' . $GLOBALS['server'],
-            $this->cookieEncrypt(
-                (string) json_encode($payload),
-                $this->getSessionEncryptionSecret()
-            ),
-            null,
-            (int) $GLOBALS['cfg']['LoginCookieStore']
-        );
+            // Duration = as configured
+            $GLOBALS['config']->setCookie(
+                'pmaAuth-' . $index,
+                $this->cookieEncrypt(
+                    (string) json_encode($payload),
+                    $this->getSessionEncryptionSecret()
+                ),
+                null,
+                (int) $GLOBALS['cfg']['LoginCookieStore']
+            );
+        }
     }
 
     /**

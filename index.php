@@ -17,6 +17,7 @@ if (PHP_VERSION_ID < 70205) {
 
 // phpcs:disable PSR1.Files.SideEffects
 define('PHPMYADMIN', true);
+//define('TESTSUITE', true);
 // phpcs:enable
 
 require_once ROOT_PATH . 'libraries/constants.php';

@@ -9,6 +9,7 @@ namespace PhpMyAdmin\Navigation\Nodes;
 
 use PhpMyAdmin\Navigation\NodeFactory;
 
+use PhpMyAdmin\Stores\ServerStore;
 use function __;
 use function _pgettext;
 

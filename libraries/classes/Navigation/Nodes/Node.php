@@ -10,6 +10,7 @@ namespace PhpMyAdmin\Navigation\Nodes;
 use PhpMyAdmin\ConfigStorage\Relation;
 use PhpMyAdmin\DatabaseInterface;
 use PhpMyAdmin\Html\Generator;
+use PhpMyAdmin\Stores\ServerStore;
 use PhpMyAdmin\Util;
 
 use function __;
@@ -373,7 +374,9 @@ class Node
      */
     public function getData($type, $pos, $searchClause = '')
     {
-        if (isset($GLOBALS['cfg']['Server']['DisableIS']) && ! $GLOBALS['cfg']['Server']['DisableIS']) {
+        $currentServerConfig = ServerStore::currentServerConfig();
+
+        if (isset($currentServerConfig['DisableIS']) && ! $currentServerConfig['DisableIS']) {
             return $this->getDataFromInfoSchema($pos, $searchClause);
         }
 

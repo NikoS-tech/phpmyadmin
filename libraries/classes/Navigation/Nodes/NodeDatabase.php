@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace PhpMyAdmin\Navigation\Nodes;
 
 use PhpMyAdmin\Html\Generator;
+use PhpMyAdmin\Stores\ServerStore;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Util;
 
@@ -44,7 +45,7 @@ class NodeDatabase extends Node
         $this->links = [
             'text' => [
                 'route' => Util::getUrlForOption($GLOBALS['cfg']['DefaultTabDatabase'], 'database'),
-                'params' => ['db' => null],
+                'params' => ['db' => null, 'server' => ServerStore::currentServerIndex()],
             ],
             'icon' => ['route' => '/database/operations', 'params' => ['db' => null]],
             'title' => __('Structure'),

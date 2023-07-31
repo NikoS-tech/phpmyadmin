@@ -9,6 +9,7 @@ namespace PhpMyAdmin;
 
 use PhpMyAdmin\ConfigStorage\Relation;
 use PhpMyAdmin\Query\Utilities;
+use PhpMyAdmin\Stores\ServerStore;
 use PhpMyAdmin\Utils\SessionCache;
 
 use function __;
@@ -168,14 +169,12 @@ class Menu
         $database = [];
         $table = [];
 
-        if (empty($cfg['Server']['host'])) {
-            $cfg['Server']['host'] = '';
-        }
+        $index = ServerStore::currentServerIndex();
+        $serverConfig = ServerStore::currentServerConfig();
 
-        $server['name'] = ! empty($cfg['Server']['verbose'])
-            ? $cfg['Server']['verbose'] : $cfg['Server']['host'];
-        $server['name'] .= empty($cfg['Server']['port'])
-            ? '' : ':' . $cfg['Server']['port'];
+        $server['name'] = empty($serverConfig['verbose']) ? $serverConfig['host'] : $serverConfig['verbose'];
+        $server['name'] .= empty($serverConfig['port']) ? '' : ':' . $serverConfig['port'];
+
         $server['url'] = Util::getUrlForOption($cfg['DefaultTabServer'], 'server');
 
         if ($this->db !== '') {
@@ -210,6 +209,7 @@ class Menu
             'server' => $server,
             'database' => $database,
             'table' => $table,
+            'index' => $index,
         ]);
     }
 

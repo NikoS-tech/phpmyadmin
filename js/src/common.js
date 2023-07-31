@@ -1,4 +1,3 @@
-
 $(function () {
     Functions.checkNumberOfFields();
 });
@@ -38,7 +37,7 @@ var CommonParams = (function () {
                 params[i] = obj[i];
             }
             if (updateNavigation &&
-                    $('#pma_navigation_tree').hasClass('synced')
+                $('#pma_navigation_tree').hasClass('synced')
             ) {
                 Navigation.showCurrent();
             }
@@ -52,6 +51,55 @@ var CommonParams = (function () {
          * @return {string}
          */
         get: function (name) {
+            if (name === 'server') {
+                var getServerIndexFromBreadcrumb = function () {
+                    var breadcrumb = document.getElementById('server-breadcrumb');
+                    return breadcrumb ? breadcrumb.dataset.server : null;
+                };
+
+                var e = window.event;
+                var serverIndex = null;
+
+                if (e) {
+                    var target = window.event ? window.event.target : null;
+
+                    if (target instanceof XMLHttpRequest) {
+                        var XMLHttpRequestResponse = JSON.parse(target.response);
+                        var XMLHttpRequestResponseParams = XMLHttpRequestResponse ? XMLHttpRequestResponse.params : null;
+
+                        if (XMLHttpRequestResponseParams && typeof XMLHttpRequestResponseParams === 'object') {
+                            serverIndex = XMLHttpRequestResponseParams.server;
+                        }
+                    }
+
+                    if (!serverIndex && target && target instanceof Element) {
+                        var sWrapper = target.closest('.s_wrapper');
+
+                        if (sWrapper) {
+                            var sIndex = null;
+                            var sIndexClassPrefix = 's_index_';
+
+                            sWrapper.classList.forEach(function (sWrapperClass) {
+                                if (sWrapperClass.includes(sIndexClassPrefix)) {
+                                    sIndex = sWrapperClass.slice(sIndexClassPrefix.length);
+                                }
+                            });
+
+                            if (sIndex) {
+                                serverIndex = sIndex;
+                            }
+                        }
+
+                    }
+                }
+
+                if (!serverIndex) {
+                    serverIndex = getServerIndexFromBreadcrumb();
+                }
+
+                return serverIndex ? serverIndex : params[name];
+            }
+
             return params[name];
         },
         /**
@@ -71,7 +119,7 @@ var CommonParams = (function () {
             }
             params[name] = value;
             if (updateNavigation &&
-                    $('#pma_navigation_tree').hasClass('synced')
+                $('#pma_navigation_tree').hasClass('synced')
             ) {
                 Navigation.showCurrent();
             }
@@ -153,7 +201,7 @@ var CommonActions = {
      */
     refreshMain: function (url, callback = undefined) {
         var newUrl = url;
-        if (! newUrl) {
+        if (!newUrl) {
             newUrl = $('#selflink').find('a').attr('href') || window.location.pathname;
             newUrl = newUrl.substring(0, newUrl.indexOf('?'));
         }

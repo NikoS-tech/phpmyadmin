@@ -10,6 +10,7 @@ namespace PhpMyAdmin\Navigation\Nodes;
 use PhpMyAdmin\CheckUserPrivileges;
 use PhpMyAdmin\Navigation\NodeFactory;
 
+use PhpMyAdmin\Stores\ServerStore;
 use function _pgettext;
 
 /**
@@ -35,12 +36,20 @@ class NodeDatabaseContainer extends Node
             return;
         }
 
+        $currentServerIndex = ServerStore::currentServerIndex();
+        $this->classes = 's_wrapper s_index_' . $currentServerIndex;
+
+        $this->links = [
+            'text' => ['route' => '/server/databases', 'params' => ['server' => $currentServerIndex]],
+            'icon' => ['route' => '/server/databases', 'params' => ['server' => $currentServerIndex]],
+        ];
+
         $newLabel = _pgettext('Create new database', 'New');
         $new = NodeFactory::getInstanceForNewNode($newLabel, 'new_database italics');
         $new->icon = ['image' => 'b_newdb', 'title' => $newLabel];
         $new->links = [
-            'text' => ['route' => '/server/databases', 'params' => []],
-            'icon' => ['route' => '/server/databases', 'params' => []],
+            'text' => ['route' => '/server/databases', 'params' => ['server' => $currentServerIndex]],
+            'icon' => ['route' => '/server/databases', 'params' => ['server' => $currentServerIndex]],
         ];
         $this->addChild($new);
     }

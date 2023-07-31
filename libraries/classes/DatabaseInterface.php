@@ -21,6 +21,7 @@ use PhpMyAdmin\Query\Compatibility;
 use PhpMyAdmin\Query\Generator as QueryGenerator;
 use PhpMyAdmin\Query\Utilities;
 use PhpMyAdmin\SqlParser\Context;
+use PhpMyAdmin\Stores\ServerStore;
 use PhpMyAdmin\Utils\SessionCache;
 
 use function __;

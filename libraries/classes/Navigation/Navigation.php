@@ -48,9 +48,9 @@ class Navigation
     private $tree;
 
     /**
-     * @param Template          $template Template instance
-     * @param Relation          $relation Relation instance
-     * @param DatabaseInterface $dbi      DatabaseInterface instance
+     * @param Template $template Template instance
+     * @param Relation $relation Relation instance
+     * @param DatabaseInterface $dbi DatabaseInterface instance
      */
     public function __construct($template, $relation, $dbi)
     {
@@ -78,11 +78,11 @@ class Navigation
         ];
 
         $response = ResponseRenderer::getInstance();
-        if (! $response->isAjax()) {
+        if (!$response->isAjax()) {
             $logo['source'] = $this->getLogoSource();
-            $logo['has_link'] = (string) $cfg['NavigationLogoLink'] !== '';
-            $logo['link'] = trim((string) $cfg['NavigationLogoLink']);
-            if (! Sanitize::checkLink($logo['link'], true)) {
+            $logo['has_link'] = (string)$cfg['NavigationLogoLink'] !== '';
+            $logo['link'] = trim((string)$cfg['NavigationLogoLink']);
+            if (!Sanitize::checkLink($logo['link'], true)) {
                 $logo['link'] = 'index.php';
             }
 
@@ -106,14 +106,14 @@ class Navigation
                 $serverSelect = Select::render(true, true);
             }
 
-            if (! defined('PMA_DISABLE_NAVI_SETTINGS')) {
+            if (!defined('PMA_DISABLE_NAVI_SETTINGS')) {
                 $pageSettings = new PageSettings('Navi', 'pma_navigation_settings');
                 $response->addHTML($pageSettings->getErrorHTML());
                 $navigationSettings = $pageSettings->getHTML();
             }
         }
 
-        if (! $response->isAjax() || ! empty($_POST['full']) || ! empty($_POST['reload'])) {
+        if (!$response->isAjax() || !empty($_POST['full']) || !empty($_POST['reload'])) {
             if ($cfg['ShowDatabasesNavigationAsTree']) {
                 // provide database tree in navigation
                 $navRender = $this->tree->renderState();
@@ -138,7 +138,7 @@ class Navigation
             'servers' => $cfg['Servers'],
             'server_select' => $serverSelect ?? '',
             'navigation_tree' => $navRender,
-            'is_navigation_settings_enabled' => ! defined('PMA_DISABLE_NAVI_SETTINGS'),
+            'is_navigation_settings_enabled' => !defined('PMA_DISABLE_NAVI_SETTINGS'),
             'navigation_settings' => $navigationSettings ?? '',
             'is_drag_drop_import_enabled' => $cfg['enable_drag_drop_import'] === true,
             'is_mariadb' => $this->dbi->isMariaDB(),
@@ -148,9 +148,9 @@ class Navigation
     /**
      * Add an item of navigation tree to the hidden items list in PMA database.
      *
-     * @param string $itemName  name of the navigation tree item
-     * @param string $itemType  type of the navigation tree item
-     * @param string $dbName    database name
+     * @param string $itemName name of the navigation tree item
+     * @param string $itemType type of the navigation tree item
+     * @param string $dbName database name
      * @param string $tableName table name if applicable
      */
     public function hideNavigationItem(
@@ -158,7 +158,8 @@ class Navigation
         $itemType,
         $dbName,
         $tableName = null
-    ): void {
+    ): void
+    {
         $navigationItemsHidingFeature = $this->relation->getRelationParameters()->navigationItemsHidingFeature;
         if ($navigationItemsHidingFeature === null) {
             return;
@@ -173,7 +174,7 @@ class Navigation
             . "'" . $this->dbi->escapeString($itemName) . "',"
             . "'" . $this->dbi->escapeString($itemType) . "',"
             . "'" . $this->dbi->escapeString($dbName) . "',"
-            . "'" . (! empty($tableName) ? $this->dbi->escapeString($tableName) : '' )
+            . "'" . (!empty($tableName) ? $this->dbi->escapeString($tableName) : '')
             . "')";
         $this->dbi->tryQueryAsControlUser($sqlQuery);
     }
@@ -182,9 +183,9 @@ class Navigation
      * Remove a hidden item of navigation tree from the
      * list of hidden items in PMA database.
      *
-     * @param string $itemName  name of the navigation tree item
-     * @param string $itemType  type of the navigation tree item
-     * @param string $dbName    database name
+     * @param string $itemName name of the navigation tree item
+     * @param string $itemType type of the navigation tree item
+     * @param string $dbName database name
      * @param string $tableName table name if applicable
      */
     public function unhideNavigationItem(
@@ -192,7 +193,8 @@ class Navigation
         $itemType,
         $dbName,
         $tableName = null
-    ): void {
+    ): void
+    {
         $navigationItemsHidingFeature = $this->relation->getRelationParameters()->navigationItemsHidingFeature;
         if ($navigationItemsHidingFeature === null) {
             return;
@@ -207,7 +209,7 @@ class Navigation
             . " AND `item_name`='" . $this->dbi->escapeString($itemName) . "'"
             . " AND `item_type`='" . $this->dbi->escapeString($itemType) . "'"
             . " AND `db_name`='" . $this->dbi->escapeString($dbName) . "'"
-            . (! empty($tableName)
+            . (!empty($tableName)
                 ? " AND `table_name`='" . $this->dbi->escapeString($tableName) . "'"
                 : ''
             );
@@ -219,7 +221,7 @@ class Navigation
      *
      * @param string $database database name
      * @param string $itemType type of the items to include
-     * @param string $table    table name
+     * @param string $table table name
      *
      * @return string HTML for the dialog to show hidden navigation items
      */
@@ -246,8 +248,8 @@ class Navigation
     }
 
     /**
-     * @param string      $database Database name
-     * @param string|null $table    Table name
+     * @param string $database Database name
+     * @param string|null $table Table name
      *
      * @return array
      */
@@ -265,14 +267,14 @@ class Navigation
             . $this->dbi->escapeString($GLOBALS['cfg']['Server']['user']) . "'"
             . " AND `db_name`='" . $this->dbi->escapeString($database) . "'"
             . " AND `table_name`='"
-            . (! empty($table) ? $this->dbi->escapeString($table) : '') . "'";
+            . (!empty($table) ? $this->dbi->escapeString($table) : '') . "'";
         $result = $this->dbi->tryQueryAsControlUser($sqlQuery);
 
         $hidden = [];
         if ($result) {
             foreach ($result as $row) {
                 $type = $row['item_type'];
-                if (! isset($hidden[$type])) {
+                if (!isset($hidden[$type])) {
                     $hidden[$type] = [];
                 }
 
