@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin;
 
+use MongoDB\Driver\Server;
+use PhpMyAdmin\Stores\ServerStore;
 use Stringable;
 
 use function __;
@@ -128,18 +130,19 @@ class Message implements Stringable
     protected $addedMessages = [];
 
     /**
-     * @param string $string   The message to be displayed
-     * @param int    $number   A numeric representation of the type of message
-     * @param array  $params   An array of parameters to use in the message
-     * @param int    $sanitize A flag to indicate what to sanitize, see
+     * @param string $string The message to be displayed
+     * @param int $number A numeric representation of the type of message
+     * @param array $params An array of parameters to use in the message
+     * @param int $sanitize A flag to indicate what to sanitize, see
      *                         constant definitions above
      */
     public function __construct(
         string $string = '',
-        int $number = self::NOTICE,
-        array $params = [],
-        int $sanitize = self::SANITIZE_NONE
-    ) {
+        int    $number = self::NOTICE,
+        array  $params = [],
+        int    $sanitize = self::SANITIZE_NONE
+    )
+    {
         $this->setString($string, $sanitize & self::SANITIZE_STRING);
         $this->setNumber($number);
         $this->setParams($params, $sanitize & self::SANITIZE_PARAMS);
@@ -220,7 +223,7 @@ class Message implements Stringable
      * shorthand for getting a customized message
      *
      * @param string $message A localized string
-     * @param int    $type    A numeric representation of the type of message
+     * @param int $type A numeric representation of the type of message
      *
      * @return Message
      *
@@ -404,8 +407,8 @@ class Message implements Stringable
     /**
      * set raw message (overrides string)
      *
-     * @param string $message  A localized string
-     * @param bool   $sanitize Whether to sanitize $message or not
+     * @param string $message A localized string
+     * @param bool $sanitize Whether to sanitize $message or not
      */
     public function setMessage(string $message, bool $sanitize = false): void
     {
@@ -419,7 +422,7 @@ class Message implements Stringable
     /**
      * set string (does not take effect if raw message is set)
      *
-     * @param string   $string   string to set
+     * @param string $string string to set
      * @param bool|int $sanitize whether to sanitize $string or not
      */
     public function setString(string $string, $sanitize = true): void
@@ -456,7 +459,7 @@ class Message implements Stringable
         if ($param instanceof self || is_float($param) || is_int($param)) {
             $this->params[] = $param;
         } else {
-            $this->params[] = htmlspecialchars((string) $param, ENT_COMPAT);
+            $this->params[] = htmlspecialchars((string)$param, ENT_COMPAT);
         }
     }
 
@@ -478,8 +481,8 @@ class Message implements Stringable
     /**
      * add a bunch of messages at once
      *
-     * @param Message[] $messages  to be added
-     * @param string    $separator to use between this and previous string/message
+     * @param Message[] $messages to be added
+     * @param string $separator to use between this and previous string/message
      */
     public function addMessages(array $messages, string $separator = ' '): void
     {
@@ -491,8 +494,8 @@ class Message implements Stringable
     /**
      * add a bunch of messages at once
      *
-     * @param string[] $messages  to be added
-     * @param string   $separator to use between this and previous string/message
+     * @param string[] $messages to be added
+     * @param string $separator to use between this and previous string/message
      */
     public function addMessagesString(array $messages, string $separator = ' '): void
     {
@@ -504,12 +507,12 @@ class Message implements Stringable
     /**
      * Real implementation of adding message
      *
-     * @param Message $message   to be added
-     * @param string  $separator to use between this and previous string/message
+     * @param Message $message to be added
+     * @param string $separator to use between this and previous string/message
      */
     private function addMessageToList(self $message, string $separator): void
     {
-        if (! empty($separator)) {
+        if (!empty($separator)) {
             $this->addedMessages[] = $separator;
         }
 
@@ -519,7 +522,7 @@ class Message implements Stringable
     /**
      * add another raw message to be concatenated on displaying
      *
-     * @param self   $message   to be added
+     * @param self $message to be added
      * @param string $separator to use between this and previous string/message
      */
     public function addMessage(self $message, string $separator = ' '): void
@@ -530,7 +533,7 @@ class Message implements Stringable
     /**
      * add another raw message to be concatenated on displaying
      *
-     * @param string $message   to be added
+     * @param string $message to be added
      * @param string $separator to use between this and previous string/message
      */
     public function addText(string $message, string $separator = ' '): void
@@ -541,7 +544,7 @@ class Message implements Stringable
     /**
      * add another html message to be concatenated on displaying
      *
-     * @param string $message   to be added
+     * @param string $message to be added
      * @param string $separator to use between this and previous string/message
      */
     public function addHtml(string $message, string $separator = ' '): void
@@ -552,7 +555,7 @@ class Message implements Stringable
     /**
      * set all params at once, usually used in conjunction with string
      *
-     * @param array    $params   parameters to set
+     * @param array $params parameters to set
      * @param bool|int $sanitize whether to sanitize params
      */
     public function setParams(array $params, $sanitize = false): void
@@ -603,7 +606,7 @@ class Message implements Stringable
             return $message;
         }
 
-        return htmlspecialchars((string) $message);
+        return htmlspecialchars((string)$message);
     }
 
     /**

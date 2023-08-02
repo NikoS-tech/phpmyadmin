@@ -145,6 +145,11 @@ class DatabaseInterface implements DbalInterface
     public $lastQueryExecutionTime = 0;
 
     /**
+     * @var string|null
+     */
+    private $serverConnected = null;
+
+    /**
      * @param DbiExtension $ext Object to be used for database queries
      */
     public function __construct(DbiExtension $ext)
@@ -1876,6 +1881,8 @@ class DatabaseInterface implements DbalInterface
                 $this->postConnect();
             }
 
+            $this->serverConnected = $server['host'] ?? null;
+
             return $result;
         }
 
@@ -1897,6 +1904,14 @@ class DatabaseInterface implements DbalInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getServerConnected(): ?string
+    {
+        return $this->serverConnected;
     }
 
     /**

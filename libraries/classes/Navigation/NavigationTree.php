@@ -202,7 +202,6 @@ class NavigationTree
         }
 
         // Initialize the tree by creating a root node
-//        $node = NodeFactory::getInstance('NodeDatabaseContainer', 'root');
         $node = NodeFactory::getInstance('NodeServersContainer', 'root');
         $this->tree = $node;
 

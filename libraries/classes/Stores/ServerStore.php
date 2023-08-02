@@ -313,24 +313,5 @@ class ServerStore extends Store
         $connect = $dbi->connect(DatabaseInterface::CONNECT_USER, $config);
 
         return !!$connect;
-//        empty($connect) && self::unsetCurrentServer();
     }
-
-//    private static function unsetCurrentServer(): void
-//    {
-//        $instance = self::instance();
-//        $index = $instance->currentServerIndex();
-//        !is_null($index) && $instance->unsetServer($index);
-//    }
-//
-//    public function unsetServer(int $index)
-//    {
-//        if (isset($this->servers[$index])) {
-//            unset($this->servers[$index]);
-//        }
-//
-//        if ($index === $this->currentServerIndex) {
-//            $this->currentServerIndex = $this->getFirstIndex();
-//        }
-//    }
 }

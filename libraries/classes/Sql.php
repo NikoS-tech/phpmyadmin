@@ -17,6 +17,7 @@ use PhpMyAdmin\SqlParser\Statements\AlterStatement;
 use PhpMyAdmin\SqlParser\Statements\DropStatement;
 use PhpMyAdmin\SqlParser\Statements\SelectStatement;
 use PhpMyAdmin\SqlParser\Utils\Query;
+use PhpMyAdmin\Stores\ServerStore;
 use PhpMyAdmin\Utils\ForeignKey;
 
 use function __;
@@ -1659,7 +1660,73 @@ class Sql
         $sqlQuery,
         ?string $completeQuery
     ): string {
-        // Handle disable/enable foreign key checks
+
+        $rules = [
+            strpos($sqlQuery, 'SHOW'),
+            strpos($sqlQuery, 'SERVERS'),
+            strpos($sqlQuery, 'PROCESSLIST'),
+        ];
+
+        $validated = array_filter($rules, function($result) {
+            return $result !== false;
+        });
+
+        $currentServerConfig = ServerStore::currentServerConfig();
+        $servers = [$currentServerConfig];
+
+        if (count($rules) === count($validated)) {
+            $servers = ServerStore::allServersConfig();
+            $sqlQuery = str_replace('SERVERS', '', $sqlQuery);
+        }
+
+        $result = '';
+        foreach ($servers as $server) {
+            $this->resetExecutionServer($server['host']);
+
+            $result .= $this->executeQueryOnceAndGetQueryResponse(
+                $analyzedSqlResults,
+                $isGotoFile,
+                $db,
+                $table,
+                $findRealEnd,
+                $sqlQueryForBookmark,
+                $extraData,
+                $messageToShow,
+                $sqlData,
+                $goto,
+                $dispQuery,
+                $dispMessage,
+                $sqlQuery,
+                $completeQuery
+            );
+        }
+
+        $this->resetExecutionServer($currentServerConfig['host']);
+        return $result;
+    }
+
+    private function resetExecutionServer(string $host) {
+        ServerStore::setCurrentServerByHost($host);
+        $this->dbi = $GLOBALS['dbi'];
+    }
+
+    public function executeQueryOnceAndGetQueryResponse(
+        array $analyzedSqlResults,
+        $isGotoFile,
+        string $db,
+        ?string $table,
+        $findRealEnd,
+        ?string $sqlQueryForBookmark,
+        $extraData,
+        ?string $messageToShow,
+        $sqlData,
+        $goto,
+        ?string $dispQuery,
+        $dispMessage,
+        $sqlQuery,
+        ?string $completeQuery
+    ): string {
+// Handle disable/enable foreign key checks
         $defaultFkCheck = ForeignKey::handleDisableCheckInit();
 
         // Handle remembered sorting order, only for single table query.

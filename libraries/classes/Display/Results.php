@@ -24,6 +24,7 @@ use PhpMyAdmin\Sql;
 use PhpMyAdmin\SqlParser\Parser;
 use PhpMyAdmin\SqlParser\Statements\SelectStatement;
 use PhpMyAdmin\SqlParser\Utils\Query;
+use PhpMyAdmin\Stores\ServerStore;
 use PhpMyAdmin\Table;
 use PhpMyAdmin\Template;
 use PhpMyAdmin\Theme;
@@ -3784,6 +3785,7 @@ class Results
             'navigation' => $navigation,
             'headers' => $headers,
             'body' => $body,
+            'server' => ServerStore::currentServer(),
             'bulk_links' => $bulkLinks,
             'operations' => $operations,
             'db' => $this->properties['db'],
