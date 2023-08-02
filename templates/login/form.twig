@@ -88,22 +88,7 @@
           <input type="password" name="pma_password" id="input_password" value="" class="form-control" autocomplete="current-password" spellcheck="false">
         </div>
       </div>
-
-{#      {% if has_servers %}#}
-{#        <div class="row mt-3">#}
-{#          <label for="select_server" class="col-sm-4 col-form-label">#}
-{#            {% trans 'Server choice:' %}#}
-{#          </label>#}
-{#          <div class="col-sm-8">#}
-{#            <select name="server" id="select_server" class="form-select"#}
-{#              {%- if is_arbitrary_server_allowed %} onchange="document.forms['login_form'].elements['pma_servername'].value = ''"{% endif %}>#}
-{#              {{ server_options|raw }}#}
-{#            </select>#}
-{#          </div>#}
-{#        </div>#}
-{#      {% else %}#}
         <input type="hidden" name="server" value="{{ server }}">
-{#      {% endif %}#}
     </div>
     <div class="card-footer">
       {% if has_captcha %}
